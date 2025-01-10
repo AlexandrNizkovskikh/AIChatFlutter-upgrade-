@@ -91,29 +91,7 @@ class _MessageBubble extends StatelessWidget {
                   );
                 },
                 tooltip: 'Копировать текст',
-              ),
-              if (!message.isUser)
-                IconButton(
-                  icon: const Icon(Icons.code, size: 16),
-                  color: Colors.white54,
-                  padding: const EdgeInsets.all(4),
-                  constraints: const BoxConstraints(
-                    minWidth: 24,
-                    minHeight: 24,
-                  ),
-                  onPressed: () {
-                    Clipboard.setData(ClipboardData(text: message.content));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Оригинальный текст скопирован',
-                            style: TextStyle(fontSize: 12)),
-                        backgroundColor: Colors.green,
-                        duration: Duration(seconds: 1),
-                      ),
-                    );
-                  },
-                  tooltip: 'Копировать оригинал',
-                ),
+              )
             ],
           ),
         ],
