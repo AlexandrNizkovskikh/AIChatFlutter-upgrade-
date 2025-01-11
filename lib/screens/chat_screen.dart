@@ -551,6 +551,7 @@ class ChatScreen extends StatelessWidget {
                             map[msg.modelId!] = {
                               'count': 0,
                               'tokens': 0,
+                              'cost': 0.0,
                             };
                           }
                           map[msg.modelId]!['count'] =
@@ -558,6 +559,10 @@ class ChatScreen extends StatelessWidget {
                           if (msg.tokens != null) {
                             map[msg.modelId]!['tokens'] =
                                 map[msg.modelId]!['tokens']! + msg.tokens!;
+                          }
+                          if (msg.cost != null) {
+                            map[msg.modelId]!['cost'] =
+                                map[msg.modelId]!['cost']! + msg.cost!;
                           }
                         }
                         return map;
@@ -588,7 +593,7 @@ class ChatScreen extends StatelessWidget {
                                       color: Colors.white70, fontSize: 12),
                                 ),
                                 Text(
-                                  'Стоимость: \$${(entry.value['tokens'] * 0.001).toStringAsFixed(4)}',
+                                  'Стоимость: \$${entry.value['cost'].toStringAsFixed(8)}',
                                   style: const TextStyle(
                                       color: Colors.white70, fontSize: 12),
                                 ),
