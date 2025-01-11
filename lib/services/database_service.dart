@@ -53,12 +53,13 @@ class DatabaseService {
         // Создание таблицы messages при первом запуске
         await db.execute('''
           CREATE TABLE messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, // Уникальный идентификатор
-            content TEXT NOT NULL, // Текст сообщения
-            is_user INTEGER NOT NULL, // Флаг пользователя (0/1)
-            timestamp TEXT NOT NULL, // Временная метка
-            model_id TEXT, // Идентификатор модели
-            tokens INTEGER // Количество токенов
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            content TEXT NOT NULL,
+            is_user INTEGER NOT NULL,
+            timestamp TEXT NOT NULL,
+            model_id TEXT,
+            tokens INTEGER,
+            cost REAL
           )
         ''');
       },
@@ -78,6 +79,7 @@ class DatabaseService {
           'timestamp': message.timestamp.toIso8601String(), // Временная метка
           'model_id': message.modelId, // Идентификатор модели
           'tokens': message.tokens, // Количество токенов
+          'cost': message.cost, // Стоимость запроса
         },
         conflictAlgorithm:
             ConflictAlgorithm.replace, // Стратегия при конфликтах
@@ -107,6 +109,7 @@ class DatabaseService {
               DateTime.parse(maps[i]['timestamp'] as String), // Временная метка
           modelId: maps[i]['model_id'] as String?, // Идентификатор модели
           tokens: maps[i]['tokens'] as int?, // Количество токенов
+          cost: maps[i]['cost'] as double?, // Стоимость запроса
         );
       });
     } catch (e) {
