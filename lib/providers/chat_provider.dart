@@ -83,6 +83,9 @@ class ChatProvider with ChangeNotifier {
     try {
       // Получение списка моделей из API
       _availableModels = await _api.getModels();
+      // Сортировка моделей по имени по возрастанию
+      _availableModels
+          .sort((a, b) => (a['name'] as String).compareTo(b['name'] as String));
       // Установка модели по умолчанию, если она не выбрана
       if (_availableModels.isNotEmpty && _currentModel == null) {
         _currentModel = _availableModels[0]['id'];
@@ -333,6 +336,10 @@ class ChatProvider with ChangeNotifier {
     await file.writeAsString(jsonEncode(messagesJson));
     // Возвращение пути к файлу
     return file.path;
+  }
+
+  String formatPricing(double pricing) {
+    return _api.formatPricing(pricing);
   }
 
   // Метод экспорта истории

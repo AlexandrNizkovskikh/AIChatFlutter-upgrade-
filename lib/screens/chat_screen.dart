@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -304,7 +303,7 @@ class ChatScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      utf8.decode((model['name'] ?? '').codeUnits),
+                      model['name'] ?? '',
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(fontSize: 12),
                     ),
@@ -316,7 +315,9 @@ class ChatScreen extends StatelessWidget {
                           child: const Icon(Icons.arrow_upward, size: 12),
                         ),
                         Text(
-                          ' ${model['pricing']?['prompt'] ?? '0.00'}',
+                          chatProvider.formatPricing(
+                              double.tryParse(model['pricing']?['prompt']) ??
+                                  0.0),
                           style: const TextStyle(fontSize: 10),
                         ),
                         const SizedBox(width: 8),
@@ -325,7 +326,9 @@ class ChatScreen extends StatelessWidget {
                           child: const Icon(Icons.arrow_downward, size: 12),
                         ),
                         Text(
-                          ' ${model['pricing']?['completion'] ?? '0.00'}',
+                          chatProvider.formatPricing(double.tryParse(
+                                  model['pricing']?['completion']) ??
+                              0.0),
                           style: const TextStyle(fontSize: 10),
                         ),
                         const SizedBox(width: 8),

@@ -1,10 +1,10 @@
-// Импорт библиотеки для работы с JSON
+// Import JSON library
 import 'dart:convert';
-// Импорт HTTP клиента
+// Import HTTP client
 import 'package:http/http.dart' as http;
-// Импорт основных классов Flutter
+// Import Flutter core classes
 import 'package:flutter/foundation.dart';
-// Импорт пакета для работы с .env файлами
+// Import package for working with .env files
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 // Класс клиента для работы с API OpenRouter
@@ -33,7 +33,6 @@ class OpenRouterClient {
           'Authorization':
               'Bearer ${dotenv.env['OPENROUTER_API_KEY']}', // Заголовок авторизации
           'Content-Type': 'application/json', // Указание типа контента
-          'HTTP-Referer': 'http://localhost:3000', // Заголовок Referer
           'X-Title': 'AI Chat Flutter', // Название приложения
         } {
     // Инициализация клиента
@@ -95,7 +94,10 @@ class OpenRouterClient {
                       'prompt': model['pricing']['prompt'] as String,
                       'completion': model['pricing']['completion'] as String,
                     },
-                    'context_length': model['context_length'] as String,
+                    'context_length': (model['context_length'] ??
+                            model['top_provider']['context_length'] ??
+                            0)
+                        .toString(),
                   })
               .toList();
         }
@@ -193,8 +195,9 @@ class OpenRouterClient {
         final data = json.decode(response.body);
         if (data != null && data['data'] != null) {
           if (baseUrl?.contains('vsegpt.ru') == true) {
-            final credits = double.tryParse(data['data']['credits']) ??
-                0; // Доступно средств
+            final credits =
+                double.tryParse(data['data']['credits'].toString()) ??
+                    0.0; // Доступно средств
             return '${credits.toStringAsFixed(2)} RUR'; // Расчет доступного баланса
           } else {
             final credits = data['data']['total_credits'] ?? 0; // Общие кредиты
@@ -212,6 +215,22 @@ class OpenRouterClient {
         print('Error getting balance: $e');
       }
       return 'Error'; // Возвращение ошибки в случае исключения
+    }
+  }
+
+  // Метод форматирования цен
+  String formatPricing(double pricing) {
+    try {
+      if (baseUrl?.contains('vsegpt.ru') == true) {
+        return ' \$${pricing.toStringAsFixed(3)} RUR/K';
+      } else {
+        return ' \$${(pricing * 1000000).toStringAsFixed(3)}/M';
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error formatting pricing: $e');
+      }
+      return '0.00';
     }
   }
 }
