@@ -208,33 +208,6 @@ class _MessageInputState extends State<_MessageInput> {
 class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});
 
-  double _calculateCost(String modelId, int tokens) {
-    final Map<String, double> modelCosts = {
-      'deepseek/deepseek-chat': 0.0014,
-      'anthropic/claude-3-sonnet': 0.015,
-      'gpt-3.5-turbo': 0.002,
-      'gpt-4': 0.06,
-      'mistral-7b': 0.0001,
-      'mixtral-8x7b': 0.0002,
-      'llama-2': 0.0001,
-    };
-
-    double costPer1000Tokens = 0.001;
-
-    if (modelCosts.containsKey(modelId)) {
-      costPer1000Tokens = modelCosts[modelId]!;
-    } else {
-      for (var entry in modelCosts.entries) {
-        if (modelId.toLowerCase().contains(entry.key.toLowerCase())) {
-          costPer1000Tokens = entry.value;
-          break;
-        }
-      }
-    }
-
-    return (tokens / 1000) * costPer1000Tokens;
-  }
-
   @override
   Widget build(BuildContext context) {
     return ErrorBoundary(
@@ -615,7 +588,7 @@ class ChatScreen extends StatelessWidget {
                                       color: Colors.white70, fontSize: 12),
                                 ),
                                 Text(
-                                  'Примерная стоимость: \$${_calculateCost(entry.key, entry.value['tokens'] as int).toStringAsFixed(4)}',
+                                  'Стоимость: \$${(entry.value['tokens'] * 0.001).toStringAsFixed(4)}',
                                   style: const TextStyle(
                                       color: Colors.white70, fontSize: 12),
                                 ),
