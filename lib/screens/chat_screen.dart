@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -296,12 +297,49 @@ class ChatScreen extends StatelessWidget {
               }
             },
             items: chatProvider.availableModels
-                .map<DropdownMenuItem<String>>((Map<String, String> model) {
+                .map<DropdownMenuItem<String>>((Map<String, dynamic> model) {
               return DropdownMenuItem<String>(
                 value: model['id'],
-                child: Text(
-                  model['name'] ?? '',
-                  overflow: TextOverflow.ellipsis,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      utf8.decode((model['name'] ?? '').codeUnits),
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Tooltip(
+                          message: 'Входные токены',
+                          child: const Icon(Icons.arrow_upward, size: 12),
+                        ),
+                        Text(
+                          ' ${model['pricing']?['prompt'] ?? '0.00'}',
+                          style: const TextStyle(fontSize: 10),
+                        ),
+                        const SizedBox(width: 8),
+                        Tooltip(
+                          message: 'Генерация',
+                          child: const Icon(Icons.arrow_downward, size: 12),
+                        ),
+                        Text(
+                          ' ${model['pricing']?['completion'] ?? '0.00'}',
+                          style: const TextStyle(fontSize: 10),
+                        ),
+                        const SizedBox(width: 8),
+                        Tooltip(
+                          message: 'Контекст',
+                          child: const Icon(Icons.memory, size: 12),
+                        ),
+                        Text(
+                          ' ${model['context_length'] ?? '0'}',
+                          style: const TextStyle(fontSize: 10),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               );
             }).toList(),
@@ -560,7 +598,6 @@ class ChatScreen extends StatelessWidget {
                                 style: const TextStyle(
                                   color: Colors.white70,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 12,
                                 ),
                               ),
                               Text(

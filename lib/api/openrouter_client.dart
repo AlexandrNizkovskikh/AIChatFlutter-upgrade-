@@ -70,7 +70,7 @@ class OpenRouterClient {
   }
 
   // Метод получения списка доступных моделей
-  Future<List<Map<String, String>>> getModels() async {
+  Future<List<Map<String, dynamic>>> getModels() async {
     try {
       // Выполнение GET запроса для получения моделей
       final response = await http.get(
@@ -91,6 +91,11 @@ class OpenRouterClient {
               .map((model) => {
                     'id': model['id'] as String,
                     'name': model['name'] as String,
+                    'pricing': {
+                      'prompt': model['pricing']['prompt'] as String,
+                      'completion': model['pricing']['completion'] as String,
+                    },
+                    'context_length': model['context_length'] as String,
                   })
               .toList();
         }
@@ -172,7 +177,9 @@ class OpenRouterClient {
     try {
       // Выполнение GET запроса для получения баланса
       final response = await http.get(
-        Uri.parse('$baseUrl/credits'),
+        Uri.parse(baseUrl?.contains('vsegpt.ru') == true
+            ? '$baseUrl/balance'
+            : '$baseUrl/credits'),
         headers: headers,
       );
 
@@ -185,13 +192,21 @@ class OpenRouterClient {
         // Парсинг данных о балансе
         final data = json.decode(response.body);
         if (data != null && data['data'] != null) {
-          final credits = data['data']['total_credits'] ?? 0; // Общие кредиты
-          final usage =
-              data['data']['total_usage'] ?? 0; // Использованные кредиты
-          return '\$${(credits - usage).toStringAsFixed(2)}'; // Расчет доступного баланса
+          if (baseUrl?.contains('vsegpt.ru') == true) {
+            final credits = double.tryParse(data['data']['credits']) ??
+                0; // Доступно средств
+            return '${credits.toStringAsFixed(2)} RUR'; // Расчет доступного баланса
+          } else {
+            final credits = data['data']['total_credits'] ?? 0; // Общие кредиты
+            final usage =
+                data['data']['total_usage'] ?? 0; // Использованные кредиты
+            return '\$${(credits - usage).toStringAsFixed(2)}'; // Расчет доступного баланса
+          }
         }
       }
-      return '\$0.00'; // Возвращение нулевого баланса по умолчанию
+      return baseUrl?.contains('vsegpt.ru') == true
+          ? '0.00 RUR'
+          : '\$0.00'; // Возвращение нулевого баланса по умолчанию
     } catch (e) {
       if (kDebugMode) {
         print('Error getting balance: $e');

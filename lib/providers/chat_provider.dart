@@ -24,7 +24,7 @@ class ChatProvider with ChangeNotifier {
   // Логи для отладки
   final List<String> _debugLogs = [];
   // Список доступных моделей
-  List<Map<String, String>> _availableModels = [];
+  List<Map<String, dynamic>> _availableModels = [];
   // Текущая выбранная модель
   String? _currentModel;
   // Баланс пользователя
@@ -43,7 +43,7 @@ class ChatProvider with ChangeNotifier {
   // Геттер для получения неизменяемого списка сообщений
   List<ChatMessage> get messages => List.unmodifiable(_messages);
   // Геттер для получения списка доступных моделей
-  List<Map<String, String>> get availableModels => _availableModels;
+  List<Map<String, dynamic>> get availableModels => _availableModels;
   // Геттер для получения текущей модели
   String? get currentModel => _currentModel;
   // Геттер для получения баланса
