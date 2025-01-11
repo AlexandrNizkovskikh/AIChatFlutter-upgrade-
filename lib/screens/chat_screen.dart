@@ -593,7 +593,7 @@ class ChatScreen extends StatelessWidget {
                                       color: Colors.white70, fontSize: 12),
                                 ),
                                 Text(
-                                  'Стоимость: \$${entry.value['cost'].toStringAsFixed(8)}',
+                                  'Стоимость: \$${entry.value['cost'] < 1e-8 ? '0.0' : entry.value['cost'].toStringAsFixed(8)}',
                                   style: const TextStyle(
                                       color: Colors.white70, fontSize: 12),
                                 ),
