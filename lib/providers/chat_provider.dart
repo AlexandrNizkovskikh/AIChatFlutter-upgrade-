@@ -213,11 +213,15 @@ class ChatProvider with ChangeNotifier {
         }
 
         // Создание и добавление сообщения AI
+        // Расчет стоимости запроса (пример: $0.002 за 1K токенов)
+        final cost = (tokens / 1000) * 0.002;
+
         final aiMessage = ChatMessage(
           content: aiContent,
           isUser: false,
           modelId: _currentModel,
           tokens: tokens,
+          cost: cost,
         );
         _messages.add(aiMessage);
         // Сохранение сообщения AI
