@@ -1,19 +1,52 @@
-<<<<<<< HEAD
-=======
-# ai_chat_flutter
+# AIChatFlutter - Чат-приложение с ИИ
 
-A new Flutter project.
+AIChatFlutter - это мобильное приложение для общения с искусственным интеллектом, разработанное с использованием Flutter. Приложение позволяет пользователям взаимодействовать с различными языковыми моделями через API OpenRouter.
 
-## Getting Started
+## Структура проекта
 
-This project is a starting point for a Flutter application.
+Основные директории и файлы:
 
-A few resources to get you started if this is your first Flutter project:
+- `lib/` - Основной код приложения
+  - `main.dart` - Точка входа в приложение
+  - `api/` - Модули для работы с API
+    - `openrouter_client.dart` - Клиент для работы с OpenRouter API
+  - `models/` - Модели данных
+    - `message.dart` - Модель сообщения
+  - `providers/` - State management
+    - `chat_provider.dart` - Провайдер для управления состоянием чата
+  - `services/` - Сервисы
+    - `database_service.dart` - Сервис для работы с локальной базой данных
+  - `screens/` - Экран приложения
+    - `chat_screen.dart` - Основной экран чата
+- `android/` - Конфигурация для Android
+- `ios/` - Конфигурация для iOS
+- `windows/` - Конфигурация для Windows
+- `linux/` - Конфигурация для Linux
+- `assets/` - Ресурсы приложения
+- `pubspec.yaml` - Зависимости проекта
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Основные модули
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
->>>>>>> a9209c8 (перенос проекта)
+### ChatProvider
+Управляет состоянием чата, включая историю сообщений и взаимодействие с API.
+
+### Message
+Модель данных, представляющая сообщение в чате.
+
+### OpenRouterClient
+Обеспечивает взаимодействие с OpenRouter API для получения ответов от ИИ.
+
+### DatabaseService
+Отвечает за хранение истории сообщений в локальной базе данных.
+
+## Функциональность приложения
+
+- Обмен сообщениями с различными языковыми моделями
+- Сохранение истории чата
+- Поддержка темного и светлого режимов
+- Кроссплатформенность (Android, iOS, Web)
+- Локализация (поддержка нескольких языков)
+
+## Начало работы
+
+Для запуска проекта следуйте инструкциям в [INSTALL.md](INSTALL.md)

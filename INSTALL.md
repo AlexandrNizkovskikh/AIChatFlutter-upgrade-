@@ -17,11 +17,15 @@
 - Android SDK
 - Java Development Kit (JDK)
 
+### iOS (для сборки под iOS)
+- macOS с Xcode
+- CocoaPods
+
 ## Установка
 
 1. Клонируйте репозиторий:
 ```bash
-git clone [url-репозитория]
+git clone https://github.com/neuro-fill/AIChatFlutter.git
 cd AIChatFlutter
 ```
 
@@ -30,7 +34,12 @@ cd AIChatFlutter
    - Добавьте Flutter в PATH
    - Запустите `flutter doctor` и следуйте инструкциям для установки недостающих компонентов
 
-3. Установите зависимости проекта:
+3. Настройка VSCode:
+   - Установите расширения Flutter и Dart
+   - Настройте форматирование кода (рекомендуется использовать dart format)
+   - Убедитесь, что в настройках включена поддержка Flutter
+
+4. Установите зависимости проекта:
 ```bash
 flutter pub get
 ```
@@ -87,27 +96,131 @@ flutter doctor -v
 flutter doctor -v
 ```
 
-5. Сборка APK:
-   - Debug версия (для тестирования):
+### iOS
+1. Установите Xcode с App Store
+2. Установите CocoaPods:
+```bash
+sudo gem install cocoapods
+```
+3. Настройте Xcode:
+   - Откройте ios/Runner.xcworkspace в Xcode
+   - Убедитесь, что выбрана последняя версия iOS SDK
+   - Настройте подписание приложения (автоматическое или вручную)
+
+## Сборка приложения
+
+### Android
+1. Debug версия (для тестирования):
+```bash
+flutter build apk --debug
+```
+2. Release версия (для публикации):
+```bash
+flutter build apk --release
+```
+3. Split APKs по архитектуре (оптимизированный размер):
+```bash
+flutter build apk --split-per-abi
+```
+
+### iOS
+1. Debug версия (для тестирования):
+```bash
+flutter build ios --debug
+```
+2. Release версия (для публикации):
+```bash
+flutter build ios --release
+```
+3. Создание .ipa файла:
+```bash
+flutter build ipa
+```
+
+## Расположение сбилденных файлов
+
+### Android
+- Debug APK: `build/app/outputs/flutter-apk/app-debug.apk`
+- Release APK: `build/app/outputs/flutter-apk/app-release.apk`
+- Split APKs:
+  - `build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk`
+  - `build/app/outputs/flutter-apk/app-arm64-v8a-release.apk`
+  - `build/app/outputs/flutter-apk/app-x86_64-release.apk`
+
+### iOS
+- Debug: `build/ios/iphoneos/Runner.app`
+- Release: `build/ios/iphoneos/Runner.app`
+- IPA: `build/ios/ipa/Runner.ipa`
+
+### Windows
+- Debug: `build/windows/runner/Debug/`
+- Release: `build/windows/runner/Release/`
+
+### Linux
+- Debug: `build/linux/x64/debug/bundle/`
+- Release: `build/linux/x64/release/bundle/`
+
+## Запуск приложения в desktop режиме для отладки
+
+### Windows
+1. Убедитесь, что установлены все необходимые компоненты:
+   - Visual Studio с поддержкой C++
+   - Windows 10 SDK
+2. Включите поддержку Windows desktop:
+```bash
+flutter config --enable-windows-desktop
+```
+3. Запустите приложение:
+```bash
+flutter run -d windows
+```
+
+### Linux
+1. Установите необходимые зависимости:
+```bash
+sudo apt-get install clang cmake ninja-build pkg-config libgtk-3-dev
+```
+2. Включите поддержку Linux desktop:
+```bash
+flutter config --enable-linux-desktop
+```
+3. Запустите приложение:
+```bash
+flutter run -d linux
+```
+
+## Запуск приложения в Android эмуляторе
+
+1. Создание эмулятора:
+   - Откройте Android Studio
+   - Перейдите в Device Manager (Tools > Device Manager)
+   - Нажмите "Create Device"
+   - Выберите тип устройства (например, Pixel 6)
+   - Выберите образ системы (рекомендуется API 33 или новее)
+   - Задайте имя эмулятора и нажмите "Finish"
+
+2. Запуск эмулятора:
+   - В Device Manager нажмите ▶️ рядом с созданным эмулятором
+   - Или через командную строку:
      ```bash
-     flutter build apk --debug
-     ```
-   - Release версия (для публикации):
-     ```bash
-     flutter build apk --release
-     ```
-   - Split APKs по архитектуре (оптимизированный размер):
-     ```bash
-     flutter build apk --split-per-abi
+     emulator -avd имя_эмулятора
      ```
 
-   APK файлы будут доступны в следующих локациях:
-   - Debug: `build/app/outputs/flutter-apk/app-debug.apk`
-   - Release: `build/app/outputs/flutter-apk/app-release.apk`
-   - Split APKs:
-     - `build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk`
-     - `build/app/outputs/flutter-apk/app-arm64-v8a-release.apk`
-     - `build/app/outputs/flutter-apk/app-x86_64-release.apk`
+3. Запуск приложения:
+   - Убедитесь, что эмулятор запущен
+   - Выполните команду:
+     ```bash
+     flutter run
+     ```
+   - Если нужно указать конкретный эмулятор:
+     ```bash
+     flutter run -d имя_эмулятора
+     ```
+
+4. Горячие клавиши:
+   - R - Перезагрузить приложение
+   - r - Hot reload (быстрая перезагрузка изменений)
+   - q - Выйти из режима разработки
 
 ## Конфигурация
 
@@ -121,44 +234,6 @@ cp .env.example .env
 OPENROUTER_API_KEY=ваш-ключ-здесь
 ```
 
-## Запуск в Android эмуляторе
-
-1. Откройте Android Studio
-2. Перейдите в Device Manager (Tools > Device Manager или значок смартфона на панели инструментов)
-3. Нажмите "Create Device"
-4. Выберите тип устройства (например, Pixel 6)
-5. Выберите образ системы:
-   - Рекомендуется API 33 (Android 13) или новее
-   - Если образ не установлен, нажмите "Download" рядом с нужной версией
-6. Задайте имя эмулятора и нажмите "Finish"
-
-Запуск приложения в эмуляторе:
-
-1. Запустите созданный эмулятор одним из способов:
-   - Через Android Studio: Device Manager > ▶️ (кнопка запуска рядом с эмулятором)
-   - Через командную строку:
-     ```bash
-     # Список доступных эмуляторов
-     emulator -list-avds
-     
-     # Запуск конкретного эмулятора
-     emulator -avd имя_эмулятора
-     ```
-
-2. После загрузки эмулятора, запустите приложение:
-   ```bash
-   # Из корневой директории проекта
-   flutter run
-   
-   # Или если нужно указать конкретное устройство
-   flutter run -d имя_эмулятора
-   ```
-
-Горячие клавиши при запущенном приложении:
-- R - Перезагрузить приложение
-- r - Hot reload (быстрая перезагрузка изменений)
-- q - Выйти из режима разработки
-
 ## Проверка установки
 
 1. Проверьте статус Flutter:
@@ -171,4 +246,4 @@ flutter doctor
 flutter run
 ```
 
-Если все установлено правильно, приложение должно запуститься на выбранном устройстве (эмулятор Android или Windows).
+Если все установлено правильно, приложение должно запуститься на выбранном устройстве (эмулятор Android, iOS или Windows).
