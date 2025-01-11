@@ -89,7 +89,16 @@ class OpenRouterClient {
           return (modelsData['data'] as List)
               .map((model) => {
                     'id': model['id'] as String,
-                    'name': model['name'] as String,
+                    'name': (() {
+                      try {
+                        return utf8.decode((model['name'] as String).codeUnits);
+                      } catch (e) {
+                        // Remove invalid UTF-8 characters and try again
+                        final cleaned = (model['name'] as String)
+                            .replaceAll(RegExp(r'[^\x00-\x7F]'), '');
+                        return utf8.decode(cleaned.codeUnits);
+                      }
+                    })(),
                     'pricing': {
                       'prompt': model['pricing']['prompt'] as String,
                       'completion': model['pricing']['completion'] as String,
