@@ -216,8 +216,22 @@ class ChatProvider with ChangeNotifier {
         }
 
         // Создание и добавление сообщения AI
-        // Расчет стоимости запроса (пример: $0.002 за 1K токенов)
-        final cost = (tokens / 1000) * 0.002;
+        // Получение количества токенов из ответа
+        final promptTokens = response['usage']['prompt_tokens'] ?? 0;
+        final completionTokens = response['usage']['completion_tokens'] ?? 0;
+
+        // Получение тарифов для текущей модели
+        final model = _availableModels
+            .firstWhere((model) => model['id'] == _currentModel);
+
+        // Расчет стоимости запроса
+        final cost = (promptTokens *
+                (double.tryParse(model['pricing']?['prompt']) ?? 0)) +
+            (completionTokens *
+                (double.tryParse(model['pricing']?['completion']) ?? 0));
+
+        // Логирование ответа API
+        _log('Cost Response: $cost');
 
         final aiMessage = ChatMessage(
           content: aiContent,
