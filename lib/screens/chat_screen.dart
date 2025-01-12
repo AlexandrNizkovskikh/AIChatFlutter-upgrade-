@@ -91,14 +91,25 @@ class _MessageBubble extends StatelessWidget {
                   if (message.tokens != null && message.cost != null)
                     const SizedBox(width: 8),
                   if (message.cost != null)
-                    Text(
-                      message.cost! < 0.001
-                          ? 'Стоимость: <0.001\$'
-                          : 'Стоимость: \$${message.cost!.toStringAsFixed(3)}',
-                      style: const TextStyle(
-                        color: Colors.white54,
-                        fontSize: 11,
-                      ),
+                    Consumer<ChatProvider>(
+                      builder: (context, chatProvider, child) {
+                        final isVsetgpt =
+                            chatProvider.baseUrl?.contains('vsetgpt.ru') ==
+                                true;
+                        return Text(
+                          message.cost! < 0.001
+                              ? isVsetgpt
+                                  ? 'Стоимость: <\$0.001'
+                                  : 'Стоимость: <0.001RUR'
+                              : isVsetgpt
+                                  ? 'Стоимость: \$${message.cost!.toStringAsFixed(3)}'
+                                  : 'Стоимость: ${message.cost!.toStringAsFixed(3)}RUR',
+                          style: const TextStyle(
+                            color: Colors.white54,
+                            fontSize: 11,
+                          ),
+                        );
+                      },
                     ),
                   IconButton(
                     icon: const Icon(Icons.copy, size: 16),

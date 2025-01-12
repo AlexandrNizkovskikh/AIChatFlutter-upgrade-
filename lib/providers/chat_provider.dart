@@ -51,6 +51,9 @@ class ChatProvider with ChangeNotifier {
   // Геттер для получения состояния загрузки
   bool get isLoading => _isLoading;
 
+  // Геттер для получения базового URL
+  String? get baseUrl => _api.baseUrl;
+
   // Конструктор провайдера
   ChatProvider() {
     // Инициализация провайдера
@@ -220,15 +223,19 @@ class ChatProvider with ChangeNotifier {
         final promptTokens = response['usage']['prompt_tokens'] ?? 0;
         final completionTokens = response['usage']['completion_tokens'] ?? 0;
 
+        final totalCost = response['usage']?['total_cost'];
+
         // Получение тарифов для текущей модели
         final model = _availableModels
             .firstWhere((model) => model['id'] == _currentModel);
 
         // Расчет стоимости запроса
-        final cost = (promptTokens *
-                (double.tryParse(model['pricing']?['prompt']) ?? 0)) +
-            (completionTokens *
-                (double.tryParse(model['pricing']?['completion']) ?? 0));
+        final cost = (totalCost == null)
+            ? ((promptTokens *
+                    (double.tryParse(model['pricing']?['prompt']) ?? 0)) +
+                (completionTokens *
+                    (double.tryParse(model['pricing']?['completion']) ?? 0)))
+            : totalCost;
 
         // Логирование ответа API
         _log('Cost Response: $cost');
