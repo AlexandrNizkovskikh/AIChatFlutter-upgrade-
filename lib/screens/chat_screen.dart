@@ -1,10 +1,17 @@
+// Импорт основных виджетов Flutter
 import 'package:flutter/material.dart';
+// Импорт для работы с системными сервисами (буфер обмена)
 import 'package:flutter/services.dart';
+// Импорт для работы с провайдерами состояния
 import 'package:provider/provider.dart';
+// Импорт для работы со шрифтами Google
 import 'package:google_fonts/google_fonts.dart';
+// Импорт провайдера чата
 import '../providers/chat_provider.dart';
+// Импорт модели сообщения
 import '../models/message.dart';
 
+// Виджет для обработки ошибок в UI
 class ErrorBoundary extends StatelessWidget {
   final Widget child;
 
@@ -33,6 +40,7 @@ class ErrorBoundary extends StatelessWidget {
   }
 }
 
+// Виджет для отображения отдельного сообщения в чате
 class _MessageBubble extends StatelessWidget {
   final ChatMessage message;
   final List<ChatMessage> messages;
@@ -145,6 +153,7 @@ class _MessageBubble extends StatelessWidget {
   }
 }
 
+// Виджет для ввода сообщений
 class _MessageInput extends StatefulWidget {
   final void Function(String) onSubmitted;
 
@@ -154,8 +163,11 @@ class _MessageInput extends StatefulWidget {
   _MessageInputState createState() => _MessageInputState();
 }
 
+// Состояние виджета ввода сообщений
 class _MessageInputState extends State<_MessageInput> {
+  // Контроллер для управления текстовым полем
   final _controller = TextEditingController();
+  // Флаг, указывающий, вводится ли сейчас сообщение
   bool _isComposing = false;
 
   @override
@@ -216,6 +228,7 @@ class _MessageInputState extends State<_MessageInput> {
   }
 }
 
+// Основной экран чата
 class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});
 
@@ -240,6 +253,7 @@ class ChatScreen extends StatelessWidget {
     );
   }
 
+  // Построение верхней панели приложения
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
       backgroundColor: const Color(0xFF262626),
@@ -255,6 +269,7 @@ class ChatScreen extends StatelessWidget {
     );
   }
 
+  // Построение выпадающего списка для выбора модели
   Widget _buildModelSelector(BuildContext context) {
     return Consumer<ChatProvider>(
       builder: (context, chatProvider, child) {
@@ -336,6 +351,7 @@ class ChatScreen extends StatelessWidget {
     );
   }
 
+  // Отображение текущего баланса пользователя
   Widget _buildBalanceDisplay(BuildContext context) {
     return Consumer<ChatProvider>(
       builder: (context, chatProvider, child) {
@@ -353,6 +369,7 @@ class ChatScreen extends StatelessWidget {
     );
   }
 
+  // Построение кнопки меню с дополнительными опциями
   Widget _buildMenuButton(BuildContext context) {
     return PopupMenuButton<String>(
       icon: const Icon(Icons.more_vert, color: Colors.white, size: 20),
@@ -412,6 +429,7 @@ class ChatScreen extends StatelessWidget {
     );
   }
 
+  // Построение списка сообщений чата
   Widget _buildMessagesList() {
     return Consumer<ChatProvider>(
       builder: (context, chatProvider, child) {
@@ -432,6 +450,7 @@ class ChatScreen extends StatelessWidget {
     );
   }
 
+  // Построение области ввода сообщений
   Widget _buildInputArea(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
@@ -452,6 +471,7 @@ class ChatScreen extends StatelessWidget {
     );
   }
 
+  // Построение панели с кнопками действий
   Widget _buildActionButtons(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
@@ -497,6 +517,7 @@ class ChatScreen extends StatelessWidget {
     );
   }
 
+  // Создание отдельной кнопки действия с заданными параметрами
   Widget _buildActionButton({
     required BuildContext context,
     required IconData icon,
@@ -519,6 +540,7 @@ class ChatScreen extends StatelessWidget {
     );
   }
 
+  // Отображение диалога с аналитикой использования чата
   void _showAnalyticsDialog(BuildContext context) {
     final chatProvider = context.read<ChatProvider>();
     showDialog(
@@ -635,6 +657,7 @@ class ChatScreen extends StatelessWidget {
     );
   }
 
+  // Отображение диалога подтверждения очистки истории
   void _showClearHistoryDialog(BuildContext context) {
     showDialog(
       context: context,
