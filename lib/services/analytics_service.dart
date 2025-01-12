@@ -1,36 +1,45 @@
+// Импорт основных классов Flutter
 import 'package:flutter/foundation.dart';
 
+// Сервис для сбора и анализа статистики использования чата
 class AnalyticsService {
+  // Единственный экземпляр класса (Singleton)
   static final AnalyticsService _instance = AnalyticsService._internal();
+  // Время начала сессии
   final DateTime _startTime;
+  // Статистика использования моделей
   final Map<String, Map<String, int>> _modelUsage = {};
+  // Данные о сообщениях в текущей сессии
   final List<Map<String, dynamic>> _sessionData = [];
 
+  // Фабричный метод для получения экземпляра
   factory AnalyticsService() {
     return _instance;
   }
 
+  // Приватный конструктор для реализации Singleton
   AnalyticsService._internal() : _startTime = DateTime.now();
 
+  // Метод для отслеживания отправленного сообщения
   void trackMessage({
-    required String model,
-    required int messageLength,
-    required double responseTime,
-    required int tokensUsed,
+    required String model, // Используемая модель
+    required int messageLength, // Длина сообщения
+    required double responseTime, // Время ответа
+    required int tokensUsed, // Использовано токенов
   }) {
     try {
-      // Initialize model statistics if not exists
+      // Инициализация статистики для модели, если она еще не существует
       _modelUsage[model] ??= {
-        'count': 0,
-        'tokens': 0,
+        'count': 0, // Счетчик сообщений
+        'tokens': 0, // Счетчик токенов
       };
 
-      // Update model usage counters
+      // Обновление счетчиков использования модели
       _modelUsage[model]!['count'] = (_modelUsage[model]!['count'] ?? 0) + 1;
       _modelUsage[model]!['tokens'] =
           (_modelUsage[model]!['tokens'] ?? 0) + tokensUsed;
 
-      // Save detailed message information
+      // Сохранение детальной информации о сообщении
       _sessionData.add({
         'timestamp': DateTime.now().toIso8601String(),
         'model': model,
@@ -43,12 +52,13 @@ class AnalyticsService {
     }
   }
 
+  // Метод получения общей статистики
   Map<String, dynamic> getStatistics() {
     try {
       final now = DateTime.now();
       final sessionDuration = now.difference(_startTime).inSeconds;
 
-      // Calculate total messages and tokens
+      // Подсчет общего количества сообщений и токенов
       int totalMessages = 0;
       int totalTokens = 0;
 
@@ -57,7 +67,7 @@ class AnalyticsService {
         totalTokens += modelStats['tokens'] ?? 0;
       }
 
-      // Calculate averages
+      // Расчет средних показателей
       final messagesPerMinute =
           sessionDuration > 0 ? (totalMessages * 60) / sessionDuration : 0.0;
 
@@ -65,13 +75,14 @@ class AnalyticsService {
           totalMessages > 0 ? totalTokens / totalMessages : 0.0;
 
       return {
-        'total_messages': totalMessages,
-        'total_tokens': totalTokens,
-        'session_duration': sessionDuration,
-        'messages_per_minute': messagesPerMinute,
-        'tokens_per_message': tokensPerMessage,
-        'model_usage': _modelUsage,
-        'start_time': _startTime.toIso8601String(),
+        'total_messages': totalMessages, // Общее количество сообщений
+        'total_tokens': totalTokens, // Общее количество токенов
+        'session_duration': sessionDuration, // Длительность сессии в секундах
+        'messages_per_minute': messagesPerMinute, // Сообщений в минуту
+        'tokens_per_message':
+            tokensPerMessage, // Среднее количество токенов на сообщение
+        'model_usage': _modelUsage, // Статистика использования моделей
+        'start_time': _startTime.toIso8601String(), // Время начала сессии
       };
     } catch (e) {
       debugPrint('Error getting statistics: $e');
@@ -81,16 +92,18 @@ class AnalyticsService {
     }
   }
 
+  // Метод экспорта данных текущей сессии
   List<Map<String, dynamic>> exportSessionData() {
     return List.from(_sessionData);
   }
 
+  // Метод очистки всех данных
   void clearData() {
     _modelUsage.clear();
     _sessionData.clear();
   }
 
-  // Анализ использования моделей
+  // Метод анализа эффективности использования моделей
   Map<String, double> getModelEfficiency() {
     final efficiency = <String, double>{};
 
@@ -109,7 +122,7 @@ class AnalyticsService {
     return efficiency;
   }
 
-  // Получение статистики по времени ответа
+  // Метод получения статистики по времени ответа
   Map<String, dynamic> getResponseTimeStats() {
     if (_sessionData.isEmpty) return {};
 
@@ -120,16 +133,18 @@ class AnalyticsService {
     final count = responseTimes.length;
 
     return {
-      'average': responseTimes.reduce((a, b) => a + b) / count,
+      'average':
+          responseTimes.reduce((a, b) => a + b) / count, // Среднее время ответа
       'median': count.isOdd
-          ? responseTimes[count ~/ 2]
-          : (responseTimes[(count - 1) ~/ 2] + responseTimes[count ~/ 2]) / 2,
-      'min': responseTimes.first,
-      'max': responseTimes.last,
+          ? responseTimes[count ~/ 2] // Медиана для нечетного количества
+          : (responseTimes[(count - 1) ~/ 2] + responseTimes[count ~/ 2]) /
+              2, // Медиана для четного
+      'min': responseTimes.first, // Минимальное время ответа
+      'max': responseTimes.last, // Максимальное время ответа
     };
   }
 
-  // Анализ длины сообщений
+  // Метод анализа статистики по длине сообщений
   Map<String, dynamic> getMessageLengthStats() {
     if (_sessionData.isEmpty) return {};
 
@@ -140,9 +155,9 @@ class AnalyticsService {
     final total = lengths.reduce((a, b) => a + b);
 
     return {
-      'average_length': total / count,
-      'total_characters': total,
-      'message_count': count,
+      'average_length': total / count, // Средняя длина сообщения
+      'total_characters': total, // Общее количество символов
+      'message_count': count, // Количество сообщений
     };
   }
 }
