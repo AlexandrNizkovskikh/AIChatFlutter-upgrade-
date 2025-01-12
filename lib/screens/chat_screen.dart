@@ -603,10 +603,19 @@ class ChatScreen extends StatelessWidget {
                                   style: const TextStyle(
                                       color: Colors.white70, fontSize: 12),
                                 ),
-                                Text(
-                                  'Стоимость: \$${entry.value['cost'] < 1e-8 ? '0.0' : entry.value['cost'].toStringAsFixed(8)}',
-                                  style: const TextStyle(
-                                      color: Colors.white70, fontSize: 12),
+                                Consumer<ChatProvider>(
+                                  builder: (context, chatProvider, child) {
+                                    final isVsetgpt = chatProvider.baseUrl
+                                            ?.contains('vsetgpt.ru') ==
+                                        true;
+                                    return Text(
+                                      isVsetgpt
+                                          ? 'Стоимость: \$${entry.value['cost'] < 1e-8 ? '0.0' : entry.value['cost'].toStringAsFixed(8)}'
+                                          : 'Стоимость: ${entry.value['cost'] < 1e-8 ? '0.0' : entry.value['cost'].toStringAsFixed(8)} RUR',
+                                      style: const TextStyle(
+                                          color: Colors.white70, fontSize: 12),
+                                    );
+                                  },
                                 ),
                               ],
                             ],
