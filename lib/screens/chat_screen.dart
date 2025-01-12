@@ -274,7 +274,7 @@ class ChatScreen extends StatelessWidget {
     return Consumer<ChatProvider>(
       builder: (context, chatProvider, child) {
         return SizedBox(
-          width: MediaQuery.of(context).size.width * 0.4,
+          width: MediaQuery.of(context).size.width * 0.6,
           child: DropdownButton<String>(
             value: chatProvider.currentModel,
             hint: const Text(
@@ -356,10 +356,10 @@ class ChatScreen extends StatelessWidget {
     return Consumer<ChatProvider>(
       builder: (context, chatProvider, child) {
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 3.0),
           child: Row(
             children: [
-              Icon(Icons.money, size: 12, color: Colors.white70),
+              Icon(Icons.credit_card, size: 12, color: Colors.white70),
               const SizedBox(width: 4),
               Text(
                 chatProvider.balance,
@@ -378,7 +378,7 @@ class ChatScreen extends StatelessWidget {
   // Построение кнопки меню с дополнительными опциями
   Widget _buildMenuButton(BuildContext context) {
     return PopupMenuButton<String>(
-      icon: const Icon(Icons.more_vert, color: Colors.white, size: 20),
+      icon: const Icon(Icons.more_vert, color: Colors.white, size: 16),
       color: const Color(0xFF333333),
       onSelected: (String choice) async {
         final chatProvider = context.read<ChatProvider>();
