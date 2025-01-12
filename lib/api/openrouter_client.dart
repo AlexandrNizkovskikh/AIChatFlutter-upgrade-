@@ -207,7 +207,7 @@ class OpenRouterClient {
             final credits =
                 double.tryParse(data['data']['credits'].toString()) ??
                     0.0; // Доступно средств
-            return '${credits.toStringAsFixed(2)} RUR'; // Расчет доступного баланса
+            return '${credits.toStringAsFixed(2)}₽'; // Расчет доступного баланса
           } else {
             final credits = data['data']['total_credits'] ?? 0; // Общие кредиты
             final usage =
@@ -217,7 +217,7 @@ class OpenRouterClient {
         }
       }
       return baseUrl?.contains('vsegpt.ru') == true
-          ? '0.00 RUR'
+          ? '0.00₽'
           : '\$0.00'; // Возвращение нулевого баланса по умолчанию
     } catch (e) {
       if (kDebugMode) {
@@ -231,9 +231,9 @@ class OpenRouterClient {
   String formatPricing(double pricing) {
     try {
       if (baseUrl?.contains('vsegpt.ru') == true) {
-        return ' \$${pricing.toStringAsFixed(3)} RUR/K';
+        return '${pricing.toStringAsFixed(3)}₽/K';
       } else {
-        return ' \$${(pricing * 1000000).toStringAsFixed(3)}/M';
+        return '\$${(pricing * 1000000).toStringAsFixed(3)}/M';
       }
     } catch (e) {
       if (kDebugMode) {
