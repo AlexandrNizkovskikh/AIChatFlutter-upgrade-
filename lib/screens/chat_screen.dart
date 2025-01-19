@@ -107,11 +107,11 @@ class _MessageBubble extends StatelessWidget {
                         return Text(
                           message.cost! < 0.001
                               ? isVsetgpt
-                                  ? 'Стоимость: <\$0.001'
-                                  : 'Стоимость: <0.001₽'
+                                  ? 'Стоимость: <0.001₽'
+                                  : 'Стоимость: <\$0.001'
                               : isVsetgpt
-                                  ? 'Стоимость: \$${message.cost!.toStringAsFixed(3)}'
-                                  : 'Стоимость: ${message.cost!.toStringAsFixed(3)}₽',
+                                  ? 'Стоимость: ${message.cost!.toStringAsFixed(3)}₽'
+                                  : 'Стоимость: \$${message.cost!.toStringAsFixed(3)}',
                           style: const TextStyle(
                             color: Colors.white54,
                             fontSize: 11,
@@ -638,8 +638,8 @@ class ChatScreen extends StatelessWidget {
                                         true;
                                     return Text(
                                       isVsetgpt
-                                          ? 'Стоимость: \$${entry.value['cost'] < 1e-8 ? '0.0' : entry.value['cost'].toStringAsFixed(8)}'
-                                          : 'Стоимость: ${entry.value['cost'] < 1e-8 ? '0.0' : entry.value['cost'].toStringAsFixed(8)} RUR',
+                                          ? 'Стоимость: ${entry.value['cost'] < 1e-8 ? '0.0' : entry.value['cost'].toStringAsFixed(8)}₽'
+                                          : 'Стоимость: \$${entry.value['cost'] < 1e-8 ? '0.0' : entry.value['cost'].toStringAsFixed(8)}',
                                       style: const TextStyle(
                                           color: Colors.white70, fontSize: 12),
                                     );
