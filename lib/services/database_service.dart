@@ -48,9 +48,18 @@ class DatabaseService {
     // Открытие/создание базы данных
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: (Database db, int version) async {
         // Создание таблицы messages при первом запуске
+        await db.execute('''
+          CREATE TABLE auth_data (
+            id INTEGER PRIMARY KEY CHECK (id = 1),
+            api_key TEXT NOT NULL,
+            pin_code TEXT NOT NULL,
+            provider TEXT NOT NULL
+          )
+        ''');
+        
         await db.execute('''
           CREATE TABLE messages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -63,7 +72,68 @@ class DatabaseService {
           )
         ''');
       },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute('''
+            CREATE TABLE auth_data (
+              id INTEGER PRIMARY KEY CHECK (id = 1),
+              api_key TEXT NOT NULL,
+              pin_code TEXT NOT NULL,
+              provider TEXT NOT NULL
+            )
+          ''');
+        }
+      },
     );
+  }
+
+  // Метод сохранения данных авторизации
+  Future<void> saveAuthData(String apiKey, String pinCode, String provider) async {
+    try {
+      final db = await database;
+      await db.insert(
+        'auth_data',
+        {
+          'id': 1,
+          'api_key': apiKey,
+          'pin_code': pinCode,
+          'provider': provider,
+        },
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    } catch (e) {
+      debugPrint('Error saving auth data: $e');
+    }
+  }
+
+  // Метод получения данных авторизации
+  Future<Map<String, String>?> getAuthData() async {
+    try {
+      final db = await database;
+      final List<Map<String, dynamic>> result = await db.query('auth_data');
+      
+      if (result.isNotEmpty) {
+        return {
+          'api_key': result.first['api_key'] as String,
+          'pin_code': result.first['pin_code'] as String,
+          'provider': result.first['provider'] as String,
+        };
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error getting auth data: $e');
+      return null;
+    }
+  }
+
+  // Метод удаления данных авторизации
+  Future<void> clearAuthData() async {
+    try {
+      final db = await database;
+      await db.delete('auth_data');
+    } catch (e) {
+      debugPrint('Error clearing auth data: $e');
+    }
   }
 
   // Метод сохранения сообщения в базу данных

@@ -10,6 +10,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../providers/chat_provider.dart';
 // Импорт модели сообщения
 import '../models/message.dart';
+// Импорт экрана авторизации
+import 'auth_screen.dart';
 
 // Виджет для обработки ошибок в UI
 class ErrorBoundary extends StatelessWidget {
@@ -229,11 +231,50 @@ class _MessageInputState extends State<_MessageInput> {
 }
 
 // Основной экран чата
-class ChatScreen extends StatelessWidget {
+class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
 
   @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  bool _isInitializing = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeProvider();
+  }
+
+  Future<void> _initializeProvider() async {
+    final provider = context.read<ChatProvider>();
+    final success = await provider.initialize();
+    
+    if (!success && mounted) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const AuthScreen()),
+      );
+      return;
+    }
+
+    if (mounted) {
+      setState(() {
+        _isInitializing = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_isInitializing) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return ErrorBoundary(
       child: Scaffold(
         backgroundColor: const Color(0xFF1E1E1E),

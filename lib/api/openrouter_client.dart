@@ -4,67 +4,116 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 // Import Flutter core classes
 import 'package:flutter/foundation.dart';
-// Import package for working with .env files
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import '../services/database_service.dart';
 
-// Класс клиента для работы с API OpenRouter
+// Класс клиента для работы с API OpenRouter и VSEGPT
 class OpenRouterClient {
-  // API ключ для авторизации
-  final String? apiKey;
-  // Базовый URL API
-  final String? baseUrl;
-  // Заголовки HTTP запросов
-  final Map<String, String> headers;
+  String? apiKey;
+  String? baseUrl;
+  Map<String, String> headers = {
+    'Content-Type': 'application/json',
+    'X-Title': 'AI Chat Flutter',
+  };
+  String? provider;
 
-  // Единственный экземпляр класса (Singleton)
   static final OpenRouterClient _instance = OpenRouterClient._internal();
-
-  // Фабричный метод для получения экземпляра
+  
   factory OpenRouterClient() {
     return _instance;
   }
 
-  // Приватный конструктор для реализации Singleton
-  OpenRouterClient._internal()
-      : apiKey =
-            dotenv.env['OPENROUTER_API_KEY'], // Получение API ключа из .env
-        baseUrl = dotenv.env['BASE_URL'], // Получение базового URL из .env
-        headers = {
-          'Authorization':
-              'Bearer ${dotenv.env['OPENROUTER_API_KEY']}', // Заголовок авторизации
-          'Content-Type': 'application/json', // Указание типа контента
-          'X-Title': 'AI Chat Flutter', // Название приложения
-        } {
-    // Инициализация клиента
-    _initializeClient();
+  OpenRouterClient._internal();
+
+  // Метод инициализации клиента с API ключом
+  Future<bool> initialize(String apiKey) async {
+    try {
+      this.apiKey = apiKey;
+      
+      // Определяем провайдера по формату ключа
+      provider = apiKey.startsWith('sk-or-vv-') ? 'vsegpt' : 'openrouter';
+      baseUrl = provider == 'vsegpt' 
+          ? 'https://api.vsegpt.ru:6070/v1'
+          : 'https://openrouter.ai/api/v1';
+      
+      // Обновляем заголовки с новым ключом
+      headers['Authorization'] = 'Bearer $apiKey';
+
+      // Проверяем баланс для валидации ключа
+      final balance = await getBalance();
+      if (balance == 'Error') {
+        return false;
+      }
+
+      // Сохраняем данные в базу
+      final dbService = DatabaseService();
+      final authData = await dbService.getAuthData();
+      
+      if (authData == null) {
+        // Генерируем случайный 4-значный PIN
+        final pin = (1000 + DateTime.now().millisecondsSinceEpoch % 9000).toString();
+        await dbService.saveAuthData(apiKey, pin, provider!);
+      }
+
+      return true;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error initializing client: $e');
+      }
+      return false;
+    }
   }
 
-  // Метод инициализации клиента
-  void _initializeClient() {
+  // Метод загрузки сохраненных данных авторизации
+  Future<bool> loadSavedAuth() async {
     try {
-      if (kDebugMode) {
-        print('Initializing OpenRouterClient...');
-        print('Base URL: $baseUrl');
+      final dbService = DatabaseService();
+      final authData = await dbService.getAuthData();
+      
+      if (authData != null) {
+        apiKey = authData['api_key'];
+        provider = authData['provider'];
+        baseUrl = provider == 'vsegpt'
+            ? 'https://api.vsegpt.ru:6070/v1'
+            : 'https://openrouter.ai/api/v1';
+        headers['Authorization'] = 'Bearer $apiKey';
+        return true;
       }
+      return false;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error loading saved auth: $e');
+      }
+      return false;
+    }
+  }
 
-      // Проверка наличия API ключа
-      if (apiKey == null) {
-        throw Exception('OpenRouter API key not found in .env');
+  // Метод проверки PIN-кода
+  Future<bool> verifyPin(String pin) async {
+    try {
+      final dbService = DatabaseService();
+      final authData = await dbService.getAuthData();
+      return authData != null && authData['pin_code'] == pin;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error verifying PIN: $e');
       }
-      // Проверка наличия базового URL
-      if (baseUrl == null) {
-        throw Exception('BASE_URL not found in .env');
-      }
+      return false;
+    }
+  }
 
+  // Метод сброса авторизации
+  Future<void> resetAuth() async {
+    try {
+      final dbService = DatabaseService();
+      await dbService.clearAuthData();
+      apiKey = null;
+      baseUrl = null;
+      provider = null;
+      headers.remove('Authorization');
+    } catch (e) {
       if (kDebugMode) {
-        print('OpenRouterClient initialized successfully');
+        print('Error resetting auth: $e');
       }
-    } catch (e, stackTrace) {
-      if (kDebugMode) {
-        print('Error initializing OpenRouterClient: $e');
-        print('Stack trace: $stackTrace');
-      }
-      rethrow;
     }
   }
 
@@ -141,10 +190,8 @@ class OpenRouterClient {
         'messages': [
           {'role': 'user', 'content': message} // Сообщение пользователя
         ],
-        'max_tokens': int.parse(dotenv.env['MAX_TOKENS'] ??
-            '1000'), // Максимальное количество токенов
-        'temperature': double.parse(
-            dotenv.env['TEMPERATURE'] ?? '0.7'), // Температура генерации
+        'max_tokens': 1000, // Максимальное количество токенов
+        'temperature': 0.7, // Температура генерации
         'stream': false, // Отключение потоковой передачи
       };
 

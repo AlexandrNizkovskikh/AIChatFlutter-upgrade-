@@ -54,17 +54,28 @@ class ChatProvider with ChangeNotifier {
   // Геттер для получения базового URL
   String? get baseUrl => _api.baseUrl;
 
+  // Флаг инициализации
+  bool _isInitialized = false;
+
+  // Геттер для проверки инициализации
+  bool get isInitialized => _isInitialized;
+
   // Конструктор провайдера
-  ChatProvider() {
-    // Инициализация провайдера
-    _initializeProvider();
-  }
+  ChatProvider();
 
   // Метод инициализации провайдера
-  Future<void> _initializeProvider() async {
+  Future<bool> initialize() async {
     try {
       // Логирование начала инициализации
       _log('Initializing provider...');
+
+      // Загрузка сохраненных данных авторизации
+      final hasAuth = await _api.loadSavedAuth();
+      if (!hasAuth) {
+        _log('No saved auth data found');
+        return false;
+      }
+
       // Загрузка доступных моделей
       await _loadModels();
       _log('Models loaded: $_availableModels');
@@ -74,10 +85,15 @@ class ChatProvider with ChangeNotifier {
       // Загрузка истории сообщений
       await _loadHistory();
       _log('History loaded: ${_messages.length} messages');
+
+      _isInitialized = true;
+      notifyListeners();
+      return true;
     } catch (e, stackTrace) {
       // Логирование ошибок инициализации
       _log('Error initializing provider: $e');
       _log('Stack trace: $stackTrace');
+      return false;
     }
   }
 

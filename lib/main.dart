@@ -1,15 +1,14 @@
 // Импорт основных виджетов Flutter
 import 'package:flutter/material.dart';
-// Импорт пакета для работы с .env файлами
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 // Импорт пакета для локализации приложения
 import 'package:flutter_localizations/flutter_localizations.dart';
 // Импорт пакета для работы с провайдерами состояния
 import 'package:provider/provider.dart';
 // Импорт кастомного провайдера для управления состоянием чата
 import 'providers/chat_provider.dart';
-// Импорт основного экрана чата
+// Импорт экранов
 import 'screens/chat_screen.dart';
+import 'screens/auth_screen.dart';
 
 // Виджет для обработки и отлова ошибок в приложении
 class ErrorBoundaryWidget extends StatelessWidget {
@@ -80,15 +79,6 @@ void main() async {
       // Логирование стека вызовов
       debugPrint('Stack trace: ${details.stack}');
     };
-
-    // Загрузка переменных окружения из .env файла
-    await dotenv.load(fileName: ".env");
-    // Логирование успешной загрузки
-    debugPrint('Environment loaded');
-    // Проверка наличия API ключа
-    debugPrint('API Key present: ${dotenv.env['OPENROUTER_API_KEY'] != null}');
-    // Логирование базового URL
-    debugPrint('Base URL: ${dotenv.env['BASE_URL']}');
 
     // Запуск приложения с обработчиком ошибок
     runApp(const ErrorBoundaryWidget(child: MyApp()));
@@ -234,7 +224,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
         // Основной экран приложения
-        home: const ChatScreen(),
+        home: const AuthScreen(),
       ),
     );
   }
