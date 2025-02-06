@@ -1,5 +1,27 @@
 # AIChatFlutter - Чат-приложение с ИИ
 
+## 🚀 Технологический стек
+_____________
+
+### 🖥 Языки программирования  
+![Dart](https://img.shields.io/badge/-Dart-0175C2?logo=dart&logoColor=white&style=for-the-badge)
+
+### 📱 Фреймворки  
+![Flutter](https://img.shields.io/badge/-Flutter-02569B?logo=flutter&logoColor=white&style=for-the-badge)
+
+### 🔌 Плагины и библиотеки  
+![Provider](https://img.shields.io/badge/-Provider-42A5F5?logo=flutter&logoColor=white&style=for-the-badge)  
+![HTTP](https://img.shields.io/badge/-HTTP-FF6F00?logo=flutter&logoColor=white&style=for-the-badge)  
+![Shared Preferences](https://img.shields.io/badge/-Shared%20Preferences-7E57C2?logo=flutter&logoColor=white&style=for-the-badge)  
+
+### 🛠 Инструменты разработки  
+![Visual Studio Code](https://img.shields.io/badge/-Visual%20Studio%20Code-007ACC?logo=visual-studio-code&logoColor=white&style=for-the-badge)  
+![Android Studio](https://img.shields.io/badge/-Android%20Studio-3DDC84?logo=android-studio&logoColor=white&style=for-the-badge)  
+
+### 🌐 API и сервисы  
+![OpenRouter.ai](https://img.shields.io/badge/-OpenRouter.ai-FF7043?logo=api&logoColor=white&style=for-the-badge)  
+![VseGPT.ru](https://img.shields.io/badge/-VseGPT.ru-FF7043?logo=api&logoColor=white&style=for-the-badge)  
+
 AIChatFlutter - это мультиплатформенное приложение для общения с искусственным интеллектом, разработанное с использованием Flutter. Приложение поддерживает работу как с OpenRouter.ai, так и с VseGPT.ru, предоставляя гибкие возможности для взаимодействия с различными языковыми моделями.
 
 ## Поддержка API
